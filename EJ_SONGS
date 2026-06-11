@@ -1,0 +1,106 @@
+class Song:
+    def __init__(self, title, duration):
+        self.title = title
+        self.duration = duration  # segundos
+    
+    def __str__(self):
+        return f"{self.title} ({self.duration}s)"    
+        
+class Playlist:
+
+    class Node:
+        def __init__(self, value, next=None):
+            self.value = value
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self._played_time = 0
+        
+    def add_song(self, song):
+        new_node = self.Node(song)
+        if self.first is None:
+            self.first = new_node
+        else:
+            self.last.next = new_node
+        
+        self.last = new_node
+       
+            
+    def play_next(self):
+        if self.first is not None:
+            a = self.first.value
+            self._played_time += self.first.value.duration
+            self.first = self.first.next
+            return a
+        else:
+            return None
+            
+    def extract_long_songs(self):
+        canciones_largas = Playlist()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.duration > 180:
+                canciones_largas.add_song(current.value)
+                
+                if prev is None:
+                    self.first = current.next
+                    current = self.first
+                
+                else:
+                    prev.next = current.next.next
+                    current = current.next
+            
+            else:
+                prev = current
+                current = current.next
+        
+        
+        return canciones_largas
+       
+    def __str__(self):
+        current = self.first
+        texto = ""
+
+        while current is not None:
+            texto += f"[{current.value}] -> "
+            current = current.next
+
+            texto += "None"
+
+        return texto
+        
+
+p = Playlist()
+
+p.add_song(Song("Song A", 120))
+p.add_song(Song("Song B", 240))
+p.add_song(Song("Song C", 90))
+p.add_song(Song("Song D", 300))
+p.add_song(Song("Song E", 180))
+
+print("Playlist inicial:")
+print(p)
+
+print("\nReproduciendo:")
+print(p.play_next())
+
+print("\nTiempo reproducido:")
+print(p._played_time)
+
+longs = p.extract_long_songs()
+
+print("\nPlaylist normal:")
+print(p)
+
+print("\nPlaylist largas:")
+print(longs)
+
+print("\nTiempo reproducido original:")
+print(p._played_time)
+
+print("Tiempo reproducido largas:")
+print(longs._played_time)
