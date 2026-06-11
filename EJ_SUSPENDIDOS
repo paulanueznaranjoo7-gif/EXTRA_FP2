@@ -1,0 +1,112 @@
+class Student:
+    def __init__(self, name, grade):
+        self.name = name
+        self.grade = grade
+
+    def __str__(self):
+        return f"{self.name} ({self.grade})"
+
+
+class StudentList:
+
+    class Node:
+        def __init__(self, value, next=None):
+            self.value = value
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+
+    def __str__(self):
+        current = self.first
+        text = ""
+
+        while current is not None:
+            text += f"[{current.value}] -> "
+            current = current.next
+
+        return text + "None"
+    
+    def add_last(self, student):
+        new_node = self.Node(student)
+        
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+            
+        else:
+            current = self.first
+            
+            while current.next is not None:
+                current = current.next
+            current.next = new_node
+            self.last = new_node
+            
+    def remove_first(self):
+        if self.first is not None:
+            a = self.first.value
+            self.first = self.first.next
+            return a
+        return 
+    
+    def count_passed(self):
+        current = self.first
+        contador = 0
+        while current is not None:
+            if current.value.grade >= 5:
+                contador += 1
+            current = current.next
+        return contador
+    
+    def separate_failed(self):
+        suspendidos = StudentList()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.grade < 5:
+                if prev is None:
+                    suspendidos.add_last(current.value)
+                    self.first = current.next
+                    current = self.first
+                else:
+                    suspendidos.add_last(current.value)
+                    prev.next = current.next
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+        self.last = prev
+        return suspendidos
+            
+        
+                
+        
+students = StudentList()
+
+students.add_last(Student("Ana", 8))
+students.add_last(Student("Luis", 3))
+students.add_last(Student("Marta", 6))
+students.add_last(Student("Pedro", 2))
+students.add_last(Student("Laura", 9))
+
+print("Lista inicial:")
+print(students)
+
+print("\nPrimer estudiante eliminado:")
+print(students.remove_first())
+
+print("\nLista actual:")
+print(students)
+
+print("\nAprobados:")
+print(students.count_passed())
+
+failed = students.separate_failed()
+
+print("\nLista aprobados:")
+print(students)
+
+print("\nLista suspendidos:")
+print(failed)
