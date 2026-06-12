@@ -1,0 +1,143 @@
+class Game:
+    def __init__(self, title, score):
+        self.title = title
+        self.score = score
+
+    def __str__(self):
+        return f"{self.title} ({self.score})"
+
+
+class GameList:
+
+    class Node:
+        def __init__(self, value, next=None):
+            self.value = value
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+
+    def __str__(self):
+        current = self.first
+        text = ""
+
+        while current is not None:
+            text += f"[{current.value}] -> "
+            current = current.next
+
+        return text + "None"
+
+    def insert_at(self, position, game):
+        new_node = self.Node(game)
+        if position < 0:
+            raise IndexError
+        elif position == 0:
+            new_node.next = self.first
+            self.first = new_node
+        else:
+            current = self.first
+            current_pos = 1
+            
+            while current_pos < position:
+                current = current.next
+                current_pos +=1
+                
+            new_node.next = current.next #X.next = B
+            current.next = new_node #A.next = X
+            
+
+    def remove_at(self, position):
+        if position == 0:
+            eliminado = self.first.value
+            self.first = self.first.next #tambien debemos guardar el que elimianmos aqui
+            return eliminado
+        else:
+            prev = self.first
+            current = self.first.next
+            current_index = 1
+            while current_index != position and current is not None:
+                prev = current
+                current = current.next
+                current_index += 1
+                
+            eliminado = prev.next.value
+            prev.next = current.next
+            if current is self.last:
+                self.last = prev
+        return eliminado
+            
+    
+    def add_last(self, game):
+        new_node = self.Node(game)
+        if self.first is None:
+            self.last = new_node
+            self.first = new_node
+        else:
+            self.last.next = new_node
+            self.last = new_node
+            
+
+    def best_game(self):
+        current = self.first
+        max = -999999
+        maximo = ""
+        while current is not None:
+            if current.value.score > max:
+                max = current.value.score
+                maximo = current.value.title
+            current = current.next   
+        return maximo
+
+    def separate_low_scores(self):
+        menos20 = GameList()
+        prev = None
+        current = self.first
+       
+        while current is not None:
+            if current.value.score <= 20:
+                if prev is None:
+                    menos20.add_last(current.value)
+                    self.first = current.next
+                    current = self.first
+                   
+                else:
+                    menos20.add_last(current.value)
+                    prev.next = current.next
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+                
+        return menos20
+                    
+    
+games = GameList()
+
+games.add_last(Game("Mario Wonder", 15))
+games.add_last(Game("Zelda TOTK", 120))
+games.add_last(Game("Inside", 5))
+games.add_last(Game("Minecraft", 60))
+games.add_last(Game("Portal", 10))
+
+print("Lista inicial:")
+print(games)
+
+print("\nJuego más largo:")
+print(games.best_game())
+
+print("\nEliminado posición 2:")
+print(games.remove_at(2))
+
+print("\nLista actual:")
+print(games)
+
+shorts = games.separate_low_scores()
+
+print("\nLista principal:")
+print(games)
+
+print("\nLista cortos:")
+print(shorts)    
+    
+    
