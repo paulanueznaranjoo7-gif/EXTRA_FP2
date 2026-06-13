@@ -1,0 +1,123 @@
+class Movie:
+    def __init__(self, title, year):
+        self.title = title
+        self.year = year
+
+    def __str__(self):
+        return f"{self.title} ({self.year})"
+
+
+class MovieList:
+
+    class Node:
+        def __init__(self, value, prev=None, next=None):
+            self.value = value
+            self.prev = prev
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+
+    def __str__(self):
+        current = self.first
+        text = ""
+
+        while current is not None:
+            text += f"[{current.value}] <-> "
+            current = current.next
+
+        return text + "None"
+
+    def add_last(self, movie):
+        new_node = self.Node(movie)
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            new_node.prev = self.last
+            self.last = new_node
+
+    def remove_first(self):
+        if self.first is not None:
+            eliminado = self.first.value
+            
+            self.first = self.first.next
+            if self.first is not None:
+                self.first.prev = None
+            else:
+                self.last = None
+            return eliminado
+        else:
+            self.last = None
+
+    def average_year(self):
+        current = self.first
+        media = 0
+        contador = 0
+        suma = 0
+        while current is not None:
+            suma += current.value.year
+            contador += 1
+            current = current.next
+        media = suma / contador
+        return media
+            
+
+    def extract_recent_movies(self):
+        posterior2015 = MovieList()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.year > 2015:
+                if prev is None:
+                    posterior2015.add_last(current.value)
+                    self.first = current.next
+                    if self.first is not None:
+                        self.first.prev = None
+                    current = self.first
+                
+                else:
+                    posterior2015.add_last(current.value)
+                    prev.next = current.next
+                    if current.next is not None:
+                        current.next.prev = prev
+                    else:
+                        self.last = prev
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+        self.last = prev
+        return posterior2015
+                        
+    
+movies = MovieList()
+
+movies.add_last(Movie("Oppenheimer", 2023))
+movies.add_last(Movie("Titanic", 1997))
+movies.add_last(Movie("Dune", 2021))
+movies.add_last(Movie("The Matrix", 1999))
+movies.add_last(Movie("Avatar 2", 2022))
+
+print("Lista inicial:")
+print(movies)
+
+print("\nEliminada:")
+print(movies.remove_first())
+
+print("\nLista actual:")
+print(movies)
+
+print("\nMedia de años:")
+print(movies.average_year())
+
+recent = movies.extract_recent_movies()
+
+print("\nLista original:")
+print(movies)
+
+print("\nPelículas recientes:")
+print(recent)
