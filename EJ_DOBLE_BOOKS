@@ -1,0 +1,131 @@
+class Book:
+    def __init__(self, title, pages):
+        self.title = title
+        self.pages = pages
+
+    def __str__(self):
+        return f"{self.title} ({self.pages}p)"
+
+
+class LibraryList:
+
+    class Node:
+        def __init__(self, value, prev=None, next=None):
+            self.value = value
+            self.prev = prev
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+
+    def __str__(self):
+        current = self.first
+        text = ""
+
+        while current is not None:
+            text += f"[{current.value}] <-> "
+            current = current.next
+
+        return text + "None"
+    
+    def add_first(self, book):
+        new_node = self.Node(book)
+        if self.first is not None:
+            new_node.next = self.first
+            self.first.prev = new_node
+            self.first = new_node
+        else:
+            self.first = new_node
+            self.last = new_node
+        
+    def remove_last(self):
+        if self.first is None:
+            return None
+        elif self.first.next is None:
+            eliminado = self.first.value
+            self.first = self.last = None
+        else:
+            prev = self.first
+            current = self.first.next
+            
+            while current is not self.last:
+                prev = current
+                current = current.next
+                
+            eliminado = current.value
+        
+            prev.next = None
+            self.last = prev
+        return eliminado
+    
+    def move_best_to_front(self):
+        current = self.first
+        maximo = -99999
+        maxima = ""
+        while current is not None:
+            if current.value.pages > maximo:
+                maximo = current.value.pages
+                maxima = current.value
+            current = current.next
+        
+        maxima.next = self.first
+        self.first.prev = maxima
+        self.first = maxima
+    
+    def extract_short_books(self):
+        menos250 = LibraryList()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.pages < 250:
+                if prev is None:
+                    menos250.add_first(current.value)
+                    self.first = current.next
+                    if self.first is not None:
+                        self.first.prev = None
+                    current = self.first
+                
+                else:
+                    menos250.add_first(current.value)
+                    prev.next = current.next
+                    if current.next is not None:
+                        current.next.prev = prev
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+        self.last = prev
+        return menos250
+            
+        
+library = LibraryList()
+
+library.add_first(Book("Dune", 500))
+library.add_first(Book("Animal Farm", 120))
+library.add_first(Book("IT", 1000))
+library.add_first(Book("The Hobbit", 295))
+library.add_first(Book("The Little Prince", 96))
+
+print("Lista inicial:")
+print(library)
+
+print("\nEliminado último:")
+print(library.remove_last())
+
+print("\nLista actual:")
+print(library)
+
+library.move_best_to_front()
+
+print("\nMayor libro al principio:")
+print(library)
+
+shorts = library.extract_short_books()
+
+print("\nLista principal:")
+print(library)
+
+print("\nLibros cortos:")
+print(shorts)
