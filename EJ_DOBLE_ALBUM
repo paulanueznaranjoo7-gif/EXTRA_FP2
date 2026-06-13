@@ -1,0 +1,138 @@
+class Album:
+    def __init__(self, title, year):
+        self.title = title
+        self.year = year
+
+    def __str__(self):
+        return f"{self.title} ({self.year})"
+
+
+class AlbumList:
+
+    class Node:
+        def __init__(self, value, prev=None, next=None):
+            self.value = value
+            self.prev = prev
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+
+    def __str__(self):
+        current = self.first
+        text = ""
+
+        while current is not None:
+            text += f"[{current.value}] <-> "
+            current = current.next
+
+        return text + "None"
+
+    def add_last(self, album):
+        new_node = self.Node(album)
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            new_node.prev = self.last 
+            self.last = new_node
+
+    def remove_at(self, position):
+        if position < 0:
+            raise IndexError
+        if position == 0:
+            eliminado = self.first
+            self.first = self.first.next
+            self.first.prev = None
+            return eliminado
+        else:
+            prev = self.first
+            current = self.first.next
+            current_pos = 1
+            
+            while current_pos < position:
+                prev = current
+                current = current.next
+                current_pos += 1
+            
+            eliminado = current.value
+            prev.next = current.next
+
+            if current.next is not None:
+                current.next.prev = prev
+                
+            if current is self.last:
+                self.last = prev
+        return current.value
+                
+                
+            
+
+    def swap_ends(self):
+        current = self.first
+        temp1 = self.first.value
+        temp2 = self.last.value
+    
+        self.first.value = temp2
+        self.last.value = temp1
+            
+
+    def extract_classics(self):
+        album2000 = AlbumList()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.year < 2000:
+                if prev is None:
+                    album2000.add_last(current.value)
+                    self.first = current.next
+                    current = self.first
+                    if self.first is not None:
+                        self.first.prev = None
+                    else:
+                         self.last = None
+                
+                else:
+                    album2000.add_last(current.value)
+                    prev.next = current.next
+                    if current.next is not None:
+                        current.next.prev = prev #debemos aue comprobar que current.mnetxtesxita, sino puede ue prev sea None
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+        self.last = prev        
+        return album2000
+    
+albums = AlbumList()
+
+albums.add_last(Album("Thriller", 1982))
+albums.add_last(Album("Hybrid Theory", 2000))
+albums.add_last(Album("Back in Black", 1980))
+albums.add_last(Album("Random Access Memories", 2013))
+albums.add_last(Album("Nevermind", 1991))
+
+print("Lista inicial:")
+print(albums)
+
+print("\nEliminado posición 2:")
+print(albums.remove_at(2))
+
+print("\nLista actual:")
+print(albums)
+
+albums.swap_ends()
+
+print("\nIntercambio extremos:")
+print(albums)
+
+classic = albums.extract_classics()
+
+print("\nLista moderna:")
+print(albums)
+
+print("\nLista clásicos:")
+print(classic)
