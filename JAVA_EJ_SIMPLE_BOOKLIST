@@ -1,0 +1,133 @@
+public class BookList {
+
+    private class Node {
+
+        private Book value;
+        private Node next;
+
+        public Node(Book value) {
+            this.value = value;
+            this.next = null;
+        }
+    }
+
+    private Node first;
+    private Node last;
+
+    public BookList() {
+        first = null;
+        last = null;
+    }
+
+    public void addLast(Book book) {
+        Node newNode = new Node(book);
+        if (this.first != null) {
+            this.last.next = newNode;
+            this.first = newNode;
+        }
+        else {
+            this.first = newNode;
+            this.last = newNode;
+        }
+        
+    }
+
+    public Book removeAt(int position) {
+        
+        Book eliminado;
+        
+        if (position < 0) {
+            throw new ArrayIndexOutOfBoundsException("POSICIÓN NEGATIVA");
+        }
+        if (position == 0) {
+            eliminado = this.first.value; //declaramos la variable, que es un objeto
+            this.first = this.first.next;
+            
+            if (this.first == null) {
+                this.last = null;
+            }
+            return eliminado;
+        }
+        else {
+            Node prev = this.first;
+            Node current = this.first.next;
+            int current_pos = 1;
+            
+            while (current_pos < position) {
+                prev = current;
+                current = current.next;
+                current_pos += 1;
+            }
+            eliminado = current.value;
+            prev.next = current.next;
+            
+            if (current == this.last) {
+                this.last = prev;
+            }
+            return eliminado;
+        }
+        
+    }
+
+    public String longestBook() {
+        Node current = this.first;
+        int maximo = -99999;
+        String maxima = "";
+        while (current != null) {
+            if (current.value.getPages() > maximo) { //xq la clase es privada
+                maximo = current.value.getPages();
+                maxima =current.value.getTitle();
+            }
+            current = current.next;
+        }
+        return maxima;
+    }
+
+    public BookList extractShortBooks() {
+        BookList shortBooks = new BookList();
+
+        Node prev = null;
+        Node current = first;
+
+        while (current != null) {
+
+        if (current.value.getPages() < 200) {
+            
+            if (prev == null) {
+                shortBooks.addLast(current.value);
+                this.first = current.next;
+                current = this.first;
+            }
+            
+            else {
+                shortBooks.addLast(current.value);
+                prev.next = current.next;
+                current = current.next;
+            }
+
+        } else {
+            prev = current;
+            current = current.next;
+
+    }
+    this.last = prev;
+    return shortBooks;
+}
+
+    return shortBooks;
+    }
+
+    @Override
+    public String toString() {
+
+        String text = "";
+        Node current = first;
+
+        while (current != null) {
+            text += "[" + current.value + "] -> ";
+            current = current.next;
+        }
+
+        return text + "null";
+    }
+}
