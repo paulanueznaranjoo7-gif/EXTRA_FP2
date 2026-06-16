@@ -1,0 +1,122 @@
+public class LoanRegister extends ContainerBase {
+    private int PenaltiesCollected;
+    
+    public LoanRegister() {
+        first = null;
+        last = null;
+        PenaltiesCollected = 0;
+    }
+    public LoanRegister(Loan[] loans) {
+        this();
+        
+        for (int i = 0; i < loans.length ; i++) {
+            appendLoan(loans[i]); //convierto los arrys a nodos, se encagrga el erachico de Loan.java
+            
+        }
+    }
+    
+    public void appendLoan(Loan loan) { //el loans[i] solo esta dentro del metodo de arriba
+    
+    Node newNode = new Node(loan);
+    
+    if (this.last != null) {
+        this.last.next = newNode;
+        this.last = newNode;
+    }
+    else {
+      this.first = newNode;
+      this.last = newNode;
+    }
+    }
+    
+    public Loan[] getLoans() {
+       int n = 0;
+       Node current = this.first;
+       while (current != null) {
+           n++;
+           current = current.next;
+       }
+       Loan[] prestamo = new Loan[n];
+       current = first;
+       for (int i = 0; i < n; i++) {
+           prestamo[i] = current.value;
+           current = current.next;
+       }
+       return prestamo;
+    }
+    
+    public Loan attendReturn() {
+        
+        Loan eliminado;
+        
+        if (this.first != null) {
+            eliminado = first.value;
+            this.first = this.first.next;
+            PenaltiesCollected += eliminado.daysOverdue * 2;
+            
+            if (this.first == null) {
+                this.last = null;
+            }
+            return eliminado;
+        }
+        
+        else {
+            return null;
+        }
+    }
+        
+    public int getPenaltiesCollected() {
+        return PenaltiesCollected;
+    }
+    public Loan[] getOverdue() { 
+        int n = 0;
+        Node current = this.first;
+        while (current != null) {
+            if (current.value.daysOverdue > 0) { //xq dice prestamos con retrasos
+                    n++;
+                    
+            }
+            current = current.next;
+        }
+        Loan[] overdue = new Loan[n];
+        current = this.first;
+        int int_pos = 0;
+        while (current != null) {
+            if (current.value.daysOverdue > 0) { //xq dice prestamos con retrasos 
+                overdue[int_pos] = current.value;
+                int_pos++;
+            }
+            current = current.next;
+       }
+       return overdue;
+    }
+    
+    public LoanRegister separateOverdue() {
+        LoanRegister separate = new LoanRegister();
+        Node prev = null;
+        Node current = this.first;
+        int int_pos = 0;
+        while (current != null) {
+            if (current.value.daysOverdue < 0) {
+                if (prev == null) {
+                    separate.appendLoan(current.value);
+                    this.first = current.next;
+                    current = this.first;
+                }
+                else {
+                    separate.appendLoan(current.value);
+                    prev.next = current.next;
+                    current = current.next;
+                }
+            }
+            else {
+                prev = current;
+                current = current.next;
+            }
+            this.last = prev;
+            return separate;
+        }
+        return separate;
+
+    }
+}
