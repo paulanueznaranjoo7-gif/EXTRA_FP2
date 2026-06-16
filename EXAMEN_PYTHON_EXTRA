@@ -1,0 +1,128 @@
+class Task:
+    def __init__(self, name, duration):
+        self.name = name
+        self.duration = duration
+
+    def __str__(self):
+        return f"{self.name}: {self.duration} min"
+
+class BaseContainer:
+
+    def __str__(self):
+        text = ""
+        current = self.first
+
+        while current is not None:
+            text += f"[{current.value}]->"
+            current = current.next
+
+        return text + "None"
+
+class TaskList(BaseContainer):
+
+    class Node:
+
+        def __init__(self, value):
+            self.value = value
+            self.next = None
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self._time_spent = 0
+
+    def add_task(self, task):
+        new_node = self.Node(task)
+        
+        if self.first is not None:
+            self.last.next = new_node
+            self.last = new_node
+        else:
+            self.first = new_node
+            self.last = new_node
+
+    def get_task(self, position):
+        if position < 0:
+            return None
+        elif position == 0:
+            return self.first.value
+        else:
+            current = self.first
+            current_pos = 0
+            
+            while current_pos < position and current is not None:
+                current = current.next
+                current_pos += 1
+            if current is None:
+                return None
+            else:
+                return current.value
+
+    def task_completed(self, position):
+        if position < 0:
+            return None
+        elif position == 0:
+            eliminado = self.first.value.duration
+            eliminar = self.first.value
+            self.first = self.first.next
+            self.time_left += eliminado
+            if self.first is None:
+                self.last = None
+            else:
+                pass
+            return eliminar
+        else:
+            prev = self.first
+            current = self.first.next
+            current_pos = 1
+            
+            while current_pos < position and current is not None:
+                prev = current
+                current = current.next
+                current_pos += 1
+            eliminado = current.value.duration
+            eliminar = current.value
+            prev.next = current.next
+            if current.next is None:
+                self.last = prev
+        self._time_spent += eliminado
+        return eliminar
+
+    @property
+    def time_left(self):
+        current = self.first
+        total = 0
+        suma = 0
+        while current is not None:
+            total += current.value.duration
+            current = current.next
+        suma = total + self.time_spent
+        return suma - self.time_spent
+
+    @property
+    def time_spent(self):
+        return self._time_spent
+
+t1 = Task("Lavar los platos", 15)
+t2 = Task("Hacer la compra", 40)
+t3 = Task("Estudiar Python", 120)
+
+lista = TaskList()
+
+lista.add_task(t1)
+lista.add_task(t2)
+lista.add_task(t3)
+
+print(lista)
+
+print(lista.get_task(1))
+
+print(lista.time_left)
+
+print(lista.task_completed(1))
+
+print(lista)
+
+print(lista.time_left)
+
+print(lista.time_spent)
