@@ -1,0 +1,193 @@
+public class Main {
+
+    public static void main(String[] args) {
+
+        Car c1 = new Car("1111AAA", "Ana");
+        Car c2 = new Car("2222BBB", "Luis");
+        Car c3 = new Car("3333CCCC", "Ana");
+        Car c4 = new Car("4444DD", "Pedro");
+
+        Parking parking = new Parking();
+
+        parking.park(c1);
+        parking.park(c2);
+        parking.park(c3);
+        parking.park(c4);
+
+        System.out.println(parking);
+
+        System.out.println(parking.countOwnerCars("Ana"));
+
+        parking.moveToFront("4444DD");
+
+        System.out.println(parking);
+
+        System.out.println(parking.removeByPlate("2222BBB"));
+
+        System.out.println(parking);
+
+        System.out.println(parking.getLongestPlate());
+
+        System.out.println(parking.size());
+    }
+}
+
+
+class Car {
+
+    private String matricula;
+    private String propietario;
+
+    public Car(String matricula, String propietario) {
+        this.matricula = matricula;
+        this.propietario = propietario;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public String getPropietario() {
+        return propietario;
+    }
+
+    @Override
+    public String toString() {
+        return matricula + " - " + propietario;
+    }
+}
+
+
+class Parking {
+
+    private class Node {
+
+        Car value;
+        Node next;
+
+        public Node(Car value) {
+            this.value = value;
+            this.next = null;
+        }
+    }
+
+    private Node first;
+    private Node last;
+
+    public Parking() {
+        first = null;
+    }
+
+    @Override
+    public String toString() {
+
+        String text = "";
+
+        Node current = first;
+
+        while (current != null) {
+            text += "[" + current.value + "] -> ";
+            current = current.next;
+        }
+
+        return text + "null";
+    }
+
+    // IMPLEMENTAR
+    public void park(Car car) {
+        Node newNode = new Node(car);
+        
+        if (this.first == null) {
+            this.first = newNode;
+            this.last = newNode;
+        }
+        else {
+            this.last.next = newNode;
+            this.last = newNode;
+        }
+        
+    }
+
+    // IMPLEMENTAR
+    public Car removeByPlate(String matricula) {
+        Node prev = this.first;
+        Node current = this.first.next;
+        while (current != null) {
+            if (current.value.getMatricula().equals(matricula)) {
+                prev.next = current.next;
+                Car eliminado = current.value;
+                return eliminado;
+            }
+            else {
+            current = current.next;
+            }
+        }
+        return null;
+        
+        
+    }
+    // IMPLEMENTAR
+    public void moveToFront(String matricula) {
+        Node prev = this.first;
+        Node current = this.first.next;
+        while (current != null) {
+            if (!current.value.getMatricula().equals(matricula)) {
+                prev = current;
+                current = current.next;
+                
+                
+            }
+            else {
+            prev.next = current.next;
+            current.next = this.first;
+            this.first = current;
+            return;
+            }
+        }
+
+    }
+
+    // IMPLEMENTAR
+    public int countOwnerCars(String propietario) {
+        int contador = 0;
+        Node current = this.first;
+        
+        while (current != null) {
+            if (current.value.getPropietario().equals(propietario)) {
+                contador++;
+            }
+            current = current.next;
+        }
+        return contador;
+    }
+
+    // IMPLEMENTAR
+    public String getLongestPlate() {
+        Node current = this.first;
+        int maximo = -9999;
+        String maxima = "";
+        
+        if (this.first == null) {
+            return null;
+        }
+        else {
+            if (current.value.getMatricula().length() > maximo) {
+                maximo = current.value.getMatricula().length();
+                maxima = current.value.getMatricula();
+            }
+            current = current.next;
+        }
+        return maxima;
+    }
+
+    // IMPLEMENTAR
+    public int size() {
+        int coches = 0;
+        Node current = this.first;
+        while (current != null) {
+            coches++;
+            current = current.next;
+        }
+        return coches;
+    }
+}
