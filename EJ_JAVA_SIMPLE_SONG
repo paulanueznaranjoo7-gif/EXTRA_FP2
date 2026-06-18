@@ -1,0 +1,228 @@
+class Song {
+
+    private String title;
+    private int likes;
+
+    public Song(String title, int likes) {
+        this.title = title;
+        this.likes = likes;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    @Override
+    public String toString() {
+        return title + " (" + likes + ")";
+    }
+}
+
+class Playlist {
+
+    private class Node {
+
+        Song value;
+        Node next;
+
+        Node(Song value) {
+            this.value = value;
+            this.next = null;
+        }
+    }
+
+    private Node first;
+    private Node last;
+
+    public Playlist() {
+        first = null;
+        last = null;
+    }
+
+    public void addSong(Song song) {
+
+        Node newNode = new Node(song);
+
+        if (first == null) {
+            first = newNode;
+            last = newNode;
+        } else {
+            last.next = newNode;
+            last = newNode;
+        }
+    }
+
+    public Song removeMostLiked() {
+
+        if (first == null) {
+            return null;
+        }
+
+        Node current = first;
+        Node prev = null;
+
+        Node maxNode = first;
+        Node maxPrev = null;
+
+        while (current != null) {
+
+            if (current.value.getLikes() > maxNode.value.getLikes()) {
+                maxNode = current;
+                maxPrev = prev;
+            }
+
+            prev = current;
+            current = current.next;
+        }
+
+        Song eliminado = maxNode.value;
+
+        if (maxPrev == null) {
+            first = first.next;
+
+            if (first == null) {
+                last = null;
+            }
+        } else {
+            maxPrev.next = maxNode.next;
+
+            if (maxNode == last) {
+                last = maxPrev;
+            }
+        }
+
+        return eliminado;
+    }
+
+    public void moveAfter(String titleToMove, String targetTitle) {
+
+        if (titleToMove.equals(targetTitle)) {
+            return;
+        }
+
+        Node move = first;
+        Node prevMove = null;
+
+        while (move != null &&
+               !move.value.getTitle().equals(titleToMove)) {
+
+            prevMove = move;
+            move = move.next;
+        }
+
+        Node target = first;
+
+        while (target != null &&
+               !target.value.getTitle().equals(targetTitle)) {
+
+            target = target.next;
+        }
+
+        if (move == null || target == null) {
+            return;
+        }
+
+        if (move == target) {
+            return;
+        }
+
+        if (prevMove == null) {
+            first = move.next;
+        } else {
+            prevMove.next = move.next;
+        }
+
+        if (move == last) {
+            last = prevMove;
+        }
+
+        move.next = target.next;
+        target.next = move;
+
+        if (target == last) {
+            last = move;
+        }
+    }
+
+    public Song getMostLiked() {
+
+        if (first == null) {
+            return null;
+        }
+
+        Node current = first;
+        Song maxima = current.value;
+
+        while (current != null) {
+
+            if (current.value.getLikes() > maxima.getLikes()) {
+                maxima = current.value;
+            }
+
+            current = current.next;
+        }
+
+        return maxima;
+    }
+
+    public int size() {
+
+        int contador = 0;
+        Node current = first;
+
+        while (current != null) {
+            contador++;
+            current = current.next;
+        }
+
+        return contador;
+    }
+
+    @Override
+    public String toString() {
+
+        String text = "";
+
+        Node current = first;
+
+        while (current != null) {
+            text += "[" + current.value + "] -> ";
+            current = current.next;
+        }
+
+        return text + "null";
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Playlist playlist = new Playlist();
+
+        playlist.addSong(new Song("Imagine", 120));
+        playlist.addSong(new Song("Bohemian Rhapsody", 300));
+        playlist.addSong(new Song("Yesterday", 180));
+        playlist.addSong(new Song("One", 250));
+
+        System.out.println(playlist);
+
+        System.out.println(playlist.size());
+
+        System.out.println(playlist.getMostLiked());
+
+        playlist.moveAfter("One", "Imagine");
+
+        System.out.println(playlist);
+
+        System.out.println(playlist.removeMostLiked());
+
+        System.out.println(playlist);
+
+        System.out.println(playlist.size());
+    }
+}
