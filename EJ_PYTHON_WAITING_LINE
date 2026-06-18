@@ -1,0 +1,165 @@
+class Person:
+
+    def __init__(self, name, priority):
+        self.name = name
+        self.priority = priority
+
+    def __str__(self):
+        return f"{self.name} ({self.priority})"
+
+
+class BaseContainer:
+
+    def __str__(self):
+
+        text = ""
+
+        current = self.first
+
+        while current is not None:
+            text += f"[{current.value}] <-> "
+            current = current.next
+
+        return text + "None"
+
+
+class WaitingList(BaseContainer):
+
+    class Node:
+
+        def __init__(self, value):
+            self.value = value
+            self.next = None
+            self.prev = None
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+
+    def add_person(self, person):
+        new_node = self.Node(person)
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            new_node.prev = self.last
+            self.last = new_node
+
+    def serve_next(self):
+        if self.first is not None:
+            eliminado = self.first.value
+            self.first = self.first.next
+            
+            if self.first is not None:
+                self.first.prev = None
+            else:
+                self.last = None
+            return eliminado
+        else:
+            self.last = None
+        return None
+            
+    def promote(self, position):
+        if position < 0:
+            raise IndexError
+        if position == 0:
+            temp1 = self.first.next.value
+            temp2 = self.first.value
+            self.first.value = temp1
+            self.first.next.value = temp2
+            
+        else:
+            current_pos = 1
+            current = self.first
+            
+            while current_pos < position and current is not None:
+                current = current.next
+                current_pos += 1
+            
+            if current is None or current.next is None:
+                return
+            
+            temp3 = current.next.value
+            temp4 = current.value
+            current.next.value = temp4
+            current.value = temp3
+        
+    def move_to_front(self, position):
+        if position < 0:
+            raise IndexError
+        if position == 0:
+            pass
+        else:
+            current_pos = 1
+            current = self.first
+            
+            while current_pos < position and current is not None:
+                current = current.next
+                current_pos += 1
+            
+            if current is None:
+                return 
+            
+            current.prev.next = current.next #quitamos a Marta y primer flecha
+
+            if current.next is not None:
+                current.next.prev = current.prev #la otra flecha
+            else:
+                self.last = current.prev #si current es el que mueves de la lista, Marta apunta al ateror de ella
+            
+            current.prev = None
+            current.next = self.first
+            self.first.prev = current
+            self.first = current
+                
+    @property
+    def highest_priority(self):
+        current = self.first
+        maximo = -999999
+        while current is not None:
+            if current.value.priority > maximo:
+                maximo = current.value.priority
+                maxima = current
+            current = current.next
+        return maximo
+
+    @property
+    def size(self):
+        current = self.first
+        contador = 0
+        while current is not None:
+            current = current.next
+            contador += 1
+            
+        return contador
+
+
+
+
+
+p1 = Person("Ana", 3)
+p2 = Person("Luis", 5)
+p3 = Person("Marta", 1)
+p4 = Person("Pedro", 10)
+
+queue = WaitingList()
+
+queue.add_person(p1)
+queue.add_person(p2)
+queue.add_person(p3)
+queue.add_person(p4)
+
+print(queue)
+
+queue.promote(2)
+print(queue)
+
+queue.move_to_front(3)
+print(queue)
+
+print(queue.highest_priority)
+
+print(queue.serve_next())
+print(queue)
+print(queue.size)
