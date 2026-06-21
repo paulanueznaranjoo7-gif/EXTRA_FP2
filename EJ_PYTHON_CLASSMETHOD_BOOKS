@@ -1,0 +1,73 @@
+q nota le das?: from LibraryBase import LibraryBase
+class Library(LibraryBase):
+    borrowed_pages_total = 0
+    def __init__(self): #la otra clase (LibraryBase) y la mía propia (self)
+        super().__init__()
+        self.borrowed_pages = 0
+        self.borrowed_book = 0
+        
+    
+    def borrow_book(self, index):
+        if self.first == None:
+            return None
+        
+        elif index < 0:
+            raise IndexValueError("posición negativa")
+            
+        elif index == 0:
+            self.borrowed_book += 1
+            self.borrowed_pages += this.first.value.pages
+            Library.borrowed_pages_total += this.first.value.pages
+            eliminado = this.first.value
+            this.first = this.first.next
+            return eliminado
+        
+        else:
+            prev = self.first
+            current = self.first.next
+            current_pos = 1
+            
+            while current_pos < index and current is not None:
+                prev = current
+                current = current.next
+                current_pos += 1
+            
+            if (current is None and current_pos > index):
+                return None
+            
+            self.borrowed_book += 1    
+            self.borrowed_pages += current.value.pages
+            Library.borrowed_pages_total += current.value.pages
+            eliminado = current.value
+            prev.next = current.next
+            return eliminado
+            
+    def get_borrowed_pages(self):
+        return self.borrowed_pages
+    
+    def get_borrowed_books(self):
+        return self.borrowed_book
+    
+    @classmethod
+    def get_global_borrowed_pages(cls):
+        return cls.borrowed_pages_total
+    
+    def get_longest_book(self):
+        current = self.first
+        maximo = -999
+        while (current is not None):
+            if current.value.pages > maximo:
+                maximo = current.value.pages
+                maxima = current.value
+            current = current.next
+        
+        return maxima
+    
+    def get_book_list(self):
+        lista = []
+        current = self.first
+        while (current is not None):
+            lista.append(current.value)
+            current = current.next
+        return lista
+            
