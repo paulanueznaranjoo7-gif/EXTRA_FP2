@@ -1,0 +1,121 @@
+from ContainerBase import ContainerBase
+class CinemaQueue(ContainerBase):
+
+    class Node:
+
+        def __init__(self, value, next=None):
+            self.value = value
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self._admitidos = 0
+                
+                
+    def enqueue(self, viewer):
+        new_node = self.Node(viewer)
+        current = self.first
+        
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            self.last = new_node
+    
+    def admit_until(self, name):
+        prev = self.first
+        current = self.first.next
+        admitidos = 0
+        
+        if self.first.value.name == name:
+            self.first = None
+            return 0
+       
+        admitidos += 1
+        self._admitidos += 1
+        
+        while current is not None:
+            if current.value.name == name:
+                if self.first is not None:
+                    self.first = current
+                return admitidos
+            else:
+                admitidos += 1
+                self._admitidos += 1
+                prev = current
+                current = current.next
+        return admitidos
+                
+    
+    def remove_minors(self):
+        menores = CinemaQueue()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.age < 18:
+                if prev is None:
+                    menores.enqueue(current.value)
+                    self.first = current.next
+                    current = self.first
+                
+                else:
+                    menores.enqueue(current.value)
+                    prev.next = current.next
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+        self.last = prev
+        return menores
+    
+    @property
+    def waiting_count(self):
+        current = self.first
+        waiting_line = 0
+        while current is not None:
+            waiting_line += 1
+            current = current.next
+        return waiting_line
+    
+    @property
+    def average_age(self):
+        current = self.first
+        suma = 0
+        contador = 0
+        media = 0
+        while current is not None:
+            contador += 1
+            suma += current.value.age
+            media = suma / contador
+            current = current.next
+        if media == 0:
+            return 0
+        else:
+            return media
+    
+    @property
+    def admitted_count(self):
+        return self._admitidos
+            
+        
+    
+        
+        
+        
+        
+        
+        
+        
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                
