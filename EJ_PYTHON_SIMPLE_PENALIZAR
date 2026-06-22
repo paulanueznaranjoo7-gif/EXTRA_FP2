@@ -1,0 +1,70 @@
+from loanbase import *
+
+
+class LoanRegister(ContainerBase):
+
+    class Node:
+
+        def __init__(self, value, next=None):
+            self.value = value
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self._penaltiescollected = 0
+    
+    def append_loan(self, loan):
+        new_node = self.Node(loan)
+        
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            self.last = new_node
+    
+    def attend_return(self):
+        if self.first is not None:
+            eliminado = self.first.value 
+            self._penaltiescollected = self._penaltiescollected + (self.first.value.days_overdue * 2)
+            self.first = self.first.next
+            return eliminado
+        else:
+            return None
+    
+    @property
+    def penalties_collected(self):
+        return self._penaltiescollected
+        
+    def separate_overdue(self):
+        retrasados = LoanRegister()
+        prev = None
+        current = self.first
+        
+        while current is not None:
+            if current.value.days_overdue > 0:
+                if prev is None:
+                    retrasados.append_loan(current.value)
+                    self.first = current.next
+                    current = self.first
+                
+                else:
+                    retrasados.append_loan(current.value)
+                    prev.next = current.next
+                    current = current.next
+            else:
+                prev = current
+                current = current.next
+        self.last = prev
+        return retrasados
+                    
+        
+        
+        
+        
+        
+        
+        
+        
+    
