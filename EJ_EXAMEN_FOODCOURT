@@ -1,0 +1,68 @@
+from foodcourtbase import *
+class OrderList(OrderListBase):
+    
+    summaryorderstotal = [0, 0]
+    
+    def __init__(self, restaurant_name):
+        super().__init__()
+        self.restaurant_name = restaurant_name
+        self.summaryorders = [0, 0]
+    
+    def serve(self, index):
+        if index < 0:
+            return None
+        
+        if self.first == None:
+            return None
+        
+        if index == 0:
+            OrderList.summaryorderstotal[0] += 1
+            OrderList.summaryorderstotal[1] += self.first.data.price
+            self.summaryorders[0] += 1
+            self.summaryorders[1] += self.first.data.price
+            eliminado = self.first.data
+            self.first = self.first.next
+            return eliminado
+        
+        else:
+            prev = self.first
+            current = self.first.next
+            current_pos = 1
+            
+            while current_pos < index and current != None:
+                prev = current
+                current = current.next
+                current_pos += 1
+            
+            if current is None and current_pos < index:
+                return None
+            
+            OrderList.summaryorderstotal[0] += 1
+            OrderList.summaryorderstotal[1] += current.data.price    
+            self.summaryorders[0] += 1
+            self.summaryorders[1] += current.data.price    
+            eliminado = current.data
+            prev.next = current.next
+            if current == self.last:
+                self.last = prev
+            return eliminado
+    
+    @property
+    def summary_orders(self):
+        tupla = tuple(self.summaryorders)
+        return tupla
+    
+    @classmethod
+    def total_summary_orders(cls):
+        tupla1 = tuple(cls.summaryorderstotal)
+        return tupla1
+    
+    def get_order_list(self):
+        lista = []
+        current = self.first
+        while current != None:
+            lista.append(current.data)
+            current = current.next
+        return lista
+        
+        
