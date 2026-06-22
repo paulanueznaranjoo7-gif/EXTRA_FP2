@@ -1,0 +1,80 @@
+from containerbase import ContainerBase
+
+class Client:
+    def __init__(self, name, total_cost):
+        self.name = name
+        self.total_cost = total_cost
+    def __str__(self):
+        return f"{self.name}: {self.total_cost}"
+        
+class CheckoutQueue(ContainerBase):
+    class Node:
+        
+        def __init__(self, value, next=None):
+            self.value = value  # El valor en el nodo.
+            self.next = next    # El enlace al siguiente nodo.
+    
+    def __init__(self):
+        self.first = None   # El enlace al primer nodo de la lista.
+        self.last = None   # El enlace al último nodo de la lista
+        self._daily_sales = 0
+    
+    def enqueue(self, client):
+        new_node = self.Node(client)
+        current = self.first
+        
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            self.last = new_node
+    
+    def dequeue(self): #borrar primero
+        if self.first is not None:
+            self._daily_sales += self.first.value.total_cost
+            eliminado = self.first.value
+            self.first = self.first.next
+            if self.first is None:
+                self.last = None
+            return eliminado
+        else:
+            self.last = None
+    
+    @property
+    def daily_sales(self):
+        return self._daily_sales
+    
+    def split(self):
+        impares =  CheckoutQueue()
+        prev = None
+        current = self.first
+        n = 0
+        
+        while current is not None:
+            if n % 2 != 0:
+                if prev is None:
+                    impares.enqueue(current.value)
+                    self.first = current.next
+                    current = self.first
+                    n += 1
+                
+                else:
+                    impares.enqueue(current.value)
+                    prev.next = current.next
+                    current = current.next
+                    n += 1
+            else:
+                prev = current
+                current = current.next
+                n += 1
+                
+        self.last = prev
+        return impares
+                    
+    
+    
+    
+                
+                
+                
