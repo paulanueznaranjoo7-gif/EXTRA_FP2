@@ -1,0 +1,97 @@
+from ContainerBase import *
+
+
+class Playlist(ContainerBase):
+
+    class Node:
+
+        def __init__(self, value, next=None):
+            self.value = value
+            self.next = next
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self._durationplayed = 0
+
+    def add_song(self, song):
+        new_node = self.Node(song)
+        
+        if self.first is None:
+            self.first = new_node
+            self.last = new_node
+        else:
+            self.last.next = new_node
+            self.last = new_node
+    
+    def get_song(self, position):
+        if self.first is None:
+            return None
+        
+        if position < 0:
+            return None
+        
+        else:
+            current = self.first
+            current_pos = 0
+            
+            while current_pos != position:
+                current = current.next
+                current_pos += 1
+            
+            if current is None and current_pos != position:
+                return None
+            
+            return current.value
+    
+    def play_song(self, position):
+        if self.first is None:
+            return None
+        
+        if position < 0:
+            return None
+        
+        if position == 0:
+            eliminado = self.first.value
+            self._durationplayed += self.first.value.duration
+            self.first = self.first.next
+        
+        else:
+            prev = self.first
+            current = self.first
+            current_pos = 0
+            
+            while current is not None and current_pos < position:
+                prev = current
+                current = current.next
+                current_pos += 1
+            
+            if current is None:
+                return None
+                
+            eliminado = current.value
+            self._durationplayed += current.value.duration
+            prev.next = current.next
+            if current is self.last:
+                self.last = prev
+            return eliminado
+    
+    @property        
+    def duration_left(self):
+        current = self.first
+        segundostotales = 0
+        
+        while current is not None:
+            segundostotales += current.value.duration
+            current = current.next
+        
+        return segundostotales
+    
+    @property            
+    def duration_played(self):
+        return self._durationplayed
+    
+    
+                
+                
+                
